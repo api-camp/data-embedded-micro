@@ -1,0 +1,6 @@
+application:
+  name: data-embedded-micro
+
+management:
+  endpoints.web.exposure.include: health,info,metrics
+
