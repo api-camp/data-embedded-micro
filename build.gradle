@@ -54,3 +54,15 @@ dependencyManagement {
 test {
 	useJUnitPlatform()
 }
+
+task dockerBuild(type: Exec) {
+	logger.lifecycle('== Building Docker ==')
+	workingDir projectDir
+	commandLine 'sh', "cli/docker-build.sh", version
+}
+
+task dockerRelease(type: Exec) {
+	logger.lifecycle('== Releasing Docker ==')
+	workingDir projectDir
+	commandLine 'sh', "cli/docker-release.sh", version
+}

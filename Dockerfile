@@ -1,6 +1,6 @@
 FROM openjdk:8
 MAINTAINER david.e
 WORKDIR /
-COPY data-embedded-micro-0.1.0.jar /home/data-embedded-micro-0.1.0.jar
+COPY app.jar /home/app.jar.jar
 EXPOSE 8080
-CMD ["java","-jar","/home/data-embedded-micro-0.1.0.jar"]
+CMD ["java","-jar","/home/app.jar"]
