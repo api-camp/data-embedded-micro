@@ -1,14 +1,12 @@
 package com.de314.data.micro.controller;
 
-import ch.qos.logback.classic.util.CopyOnInheritThreadLocal;
+import com.de314.data.local.api.kv.KeyValueStore;
 import com.de314.data.local.api.model.CursorPage;
-import com.de314.data.local.api.model.DataRow;
 import com.de314.data.local.api.model.ScanOptions;
-import com.de314.data.local.api.service.DataStoreFactory;
-import com.de314.data.local.disk.RocksKeyValueStore;
+import com.de314.data.local.api.service.DataStoreService;
+import com.de314.data.local.disk.RockDBDataStoreService;
 import com.de314.data.local.utils.JsonUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/data/{namespace}")
 public class DataController {
 
-    private final DataStoreFactory storeFactory;
+    private final RockDBDataStoreService storeService;
     private final JsonUtils jsonUtils;
 
     @GetMapping
@@ -41,17 +39,11 @@ public class DataController {
             @RequestParam("prefix") Optional<String> prefix,
             @RequestParam("limit") Optional<Long> limit
     ) {
-        RocksKeyValueStore<JsonNode> store = storeFactory.getRocksStore(namespace);
-        ScanOptions.ScanOptionsBuilder scanOptionsBuilder;
-        if (prefix.isPresent()) {
-            scanOptionsBuilder = ScanOptions.fromPrefix(prefix.get(), cursor.orElse(null));
-        } else if (cursor.isPresent()) {
-            scanOptionsBuilder = ScanOptions.fromCursor(cursor.get());
-        } else {
-            scanOptionsBuilder = ScanOptions.all();
-        }
-        scanOptionsBuilder.limit(limit.filter(n -> n > 0 && n <= 100).orElse(25L));
-        return store.scan(scanOptionsBuilder.build());
+        KeyValueStore<JsonNode> store = storeService.getOrCreate(namespace);
+        ScanOptions options = ScanOptions.from(prefix, cursor)
+                .limit(limit.filter(n -> n > 0 && n <= 100).orElse(25L))
+                .build();
+        return store.scan(options);
     }
 
     @GetMapping("/{key}")
@@ -59,7 +51,7 @@ public class DataController {
             @PathVariable("namespace") String namespace,
             @PathVariable("key") String key
     ) {
-        return storeFactory.getRocksStore(namespace).get(key)
+        return storeService.getOrCreate(namespace).get(key)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -70,7 +62,7 @@ public class DataController {
             @RequestBody JsonNode value
     ) {
         String key = UUID.randomUUID().toString();
-        storeFactory.getRocksStore(namespace).put(key, value);
+        storeService.getOrCreate(namespace).put(key, value);
         return ResponseEntity.status(HttpStatus.CREATED).body(key);
     }
 
@@ -80,7 +72,7 @@ public class DataController {
             @PathVariable("key") String key,
             @RequestBody JsonNode value
     ) {
-        storeFactory.getRocksStore(namespace).put(key, value);
+        storeService.getOrCreate(namespace).put(key, value);
         return ResponseEntity.noContent().build();
     }
 
@@ -90,7 +82,7 @@ public class DataController {
             @PathVariable("key") String key,
             @RequestBody JsonNode value
     ) {
-        RocksKeyValueStore<JsonNode> store = storeFactory.getRocksStore(namespace);
+        KeyValueStore<JsonNode> store = storeService.getOrCreate(namespace);
         Optional<JsonNode> persisted = store.get(key);
         if (!persisted.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -105,7 +97,7 @@ public class DataController {
             @PathVariable("namespace") String namespace,
             @PathVariable("key") String key
     ) {
-        return storeFactory.getRocksStore(namespace).delete(key)
+        return storeService.getOrCreate(namespace).delete(key)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.de314.data'
-version = '0.1.0'
+version = '0.1.1'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -25,7 +25,7 @@ ext {
 }
 
 dependencies {
-	implementation 'com.de314.data:data-embedded-library:0.1.0'
+	implementation 'com.de314.data:data-embedded-library:0.2.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
@@ -56,13 +56,22 @@ test {
 }
 
 task dockerBuild(type: Exec) {
-	logger.lifecycle('== Building Docker ==')
 	workingDir projectDir
 	commandLine 'sh', "cli/docker-build.sh", version
 }
 
+dockerBuild.shouldRunAfter test
+
 task dockerRelease(type: Exec) {
-	logger.lifecycle('== Releasing Docker ==')
 	workingDir projectDir
 	commandLine 'sh', "cli/docker-release.sh", version
 }
+
+dockerRelease.shouldRunAfter dockerBuild
+
+task doRelease(type: Exec) {
+	workingDir projectDir
+	commandLine 'sh', "cli/do-release.sh", version
+}
+
+doRelease.shouldRunAfter dockerRelease

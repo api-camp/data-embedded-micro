@@ -1,8 +1,8 @@
 package com.de314.data.micro.config;
 
 import com.de314.data.local.api.kv.KeyValueStore;
-import com.de314.data.local.api.service.DataAdapter;
-import com.de314.data.local.api.service.DataStoreFactory;
+import com.de314.data.local.disk.RockDBDataStoreService;
+import com.de314.data.local.memory.MemoryMapDataStoreService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,12 +10,17 @@ import org.springframework.context.annotation.Configuration;
 public class DataConfig {
 
     @Bean
-    public DataStoreFactory dataStoreFactory() {
-        return DataStoreFactory.instance();
+    public RockDBDataStoreService rocksDataStoreService() {
+        return (RockDBDataStoreService) RockDBDataStoreService.instance();
     }
 
     @Bean
-    public KeyValueStore<String> systemKvStore(DataStoreFactory storeFactory) {
-        return storeFactory.getRocksStore("__system", String.class);
+    public MemoryMapDataStoreService memoryMapDataStoreService() {
+        return (MemoryMapDataStoreService) MemoryMapDataStoreService.instance();
+    }
+
+    @Bean
+    public KeyValueStore<String> systemKvStore(MemoryMapDataStoreService memoryMapDataStoreService) {
+        return memoryMapDataStoreService.getOrCreate("__system", String.class);
     }
 }

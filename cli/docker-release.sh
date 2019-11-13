@@ -12,3 +12,4 @@ VERSION="${1}"
 
 echo "Releasing $VERSION..."
 docker push "de314/data-embedded-micro:${VERSION}"
+docker push "de314/data-embedded-micro:latest"
