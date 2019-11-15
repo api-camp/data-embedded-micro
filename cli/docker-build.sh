@@ -13,7 +13,7 @@ JAR_FILENAME="data-embedded-micro-${VERSION}.jar"
 
 echo "Install..."
 cp "build/libs/$JAR_FILENAME" app.jar
-docker build -t de314/data-embedded-micro .
+docker build --build-arg do_spaces_token=${DO_SPACE_ACCESS_TOKEN} --build-arg do_spaces_secret=${DO_SPACE_SECRET} -t de314/data-embedded-micro .
 rm app.jar
 echo "Release..."
 docker tag de314/data-embedded-micro "de314/data-embedded-micro:${VERSION}"

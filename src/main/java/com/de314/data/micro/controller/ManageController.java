@@ -73,8 +73,7 @@ public class ManageController {
     public ResponseEntity<Boolean> destroy(@PathVariable("namespace") String namespace) {
         return storeService.get(namespace)
                 .map(store -> {
-                    store.delete(ScanOptions.all().build());
-//                    storeFactory.hideRocksNamespace(namespace);
+                    storeService.destroy(namespace);
                     return ResponseEntity.ok(true);
                 })
                 .orElse(ResponseEntity.notFound().build());

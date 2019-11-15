@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.de314.data'
-version = '0.1.1'
+version = '1.0.0'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -25,7 +25,7 @@ ext {
 }
 
 dependencies {
-	implementation 'com.de314.data:data-embedded-library:0.2.0'
+	implementation 'com.de314.data:data-embedded-library:1.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'

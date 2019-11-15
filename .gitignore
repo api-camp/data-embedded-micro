@@ -5,7 +5,9 @@ build/
 !**/src/main/**
 !**/src/test/**
 
-data
+data/archive
+data/db
+data/tmp
 
 ### STS ###
 .apt_generated

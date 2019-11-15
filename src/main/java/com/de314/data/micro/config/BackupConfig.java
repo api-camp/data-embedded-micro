@@ -5,6 +5,8 @@ import com.de314.data.local.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +20,7 @@ public class BackupConfig {
     }
 
     @Bean
+    @Profile("!testing")
     public FileUtils.SpaceConfig spaceConfig(
             @Value("${do.spaces.token}") String accessToken,
             @Value("${do.spaces.secret}") String secret,
@@ -31,6 +34,18 @@ public class BackupConfig {
                 .serviceEndpoint(serviceEndpoint)
                 .region(region)
                 .bucketName(bucketName)
+                .build();
+    }
+
+    @Bean
+    @Profile("testing")
+    public FileUtils.SpaceConfig spaceConfig_testing() {
+        return FileUtils.SpaceConfig.builder()
+                .accessToken("testToken")
+                .secret("testSecret")
+                .serviceEndpoint("nyc3.digitaloceanspaces.com")
+                .region("nyc3")
+                .bucketName("api-camp-data-backup")
                 .build();
     }
 

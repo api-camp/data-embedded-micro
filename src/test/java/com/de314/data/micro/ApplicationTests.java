@@ -2,9 +2,11 @@ package com.de314.data.micro;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-class DataEmbeddedMicroApplicationTests {
+@ActiveProfiles("testing")
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {
