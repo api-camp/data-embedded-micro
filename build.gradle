@@ -15,7 +15,6 @@ configurations {
 }
 
 repositories {
-	mavenLocal()
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
 }
@@ -25,9 +24,10 @@ ext {
 }
 
 dependencies {
-	implementation 'com.de314.data:data-embedded-library:1.0.0'
+	implementation 'io.github.de314:api-camp-data:1.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 //	implementation 'org.springframework.cloud:spring-cloud-gcp-starter-pubsub'

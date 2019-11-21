@@ -1,6 +1,5 @@
-application:
-  name: data-embedded-micro
+spring.application.name: data-embedded-micro
 
 management:
-  endpoints.web.exposure.include: health,info,metrics
+  endpoints.web.exposure.include: health,info,metrics,prometheus
 
